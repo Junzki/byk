@@ -46,7 +46,7 @@ Please refer to [docker-compose.yml](docker-compose.yml) for an example of setti
 This project is licensed under the **GNU General Public License v3 (GPLv3)**.
 
 ### Third-party Component Notices
-The module `/nlc_isbn` contains code derived from [DoiiarX/NLCISBNPlugin](https://github.com/DoiiarX/NLCISBNPlugin) 
+The module [`byk/nlc_isbn`](byk/nlc_isbn/README.md) contains code derived from [DoiiarX/NLCISBNPlugin](https://github.com/DoiiarX/NLCISBNPlugin) 
 (Apache License 2.0). 
 In accordance with the Apache 2.0 license, all original copyright notices are preserved, 
 and modifications are documented. 

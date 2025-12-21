@@ -10,7 +10,7 @@ as permitted by the compatibility between Apache 2.0 and GPLv3.
 Original Copyright 2025 DoiiarX <doiiars AT qq.com>
 Modified by Andrija Junzki <andrija.junzki AT gmail.com> 2025
 
-*Data Optimization*
-The original hard-coded dictionary in data_wrapper.py has been converted to a gzip-compressed JSON format (clc.json.gz)
-by Andrija Junzki to improve loading efficiency and reduce package size.
-
+## Data Optimization
+The original hard-coded dictionary in [`data_wrapper.py`](https://github.com/DoiiarX/NLCISBNPlugin/blob/main/src/data_wrapper.py) 
+has been converted to a gzip-compressed JSON format (`clc.json.gz`) to improve loading efficiency and  reduce package 
+size.

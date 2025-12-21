@@ -1,6 +1,6 @@
 # nlc_isbn
 
-The work is a variant of project [DoiiarX/NLCISBNPlugin](DoiiarX/NLCISBNPlugin/)
+The work is a derivative work of project [DoiiarX/NLCISBNPlugin](DoiiarX/NLCISBNPlugin/)
 
 ## License
-Please see the [NOTICE](NOTICE.txt) file for details.
+Please see the [NOTICE](NOTICE.md) file for details.
