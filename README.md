@@ -6,14 +6,28 @@ A simple book manager.
 
 ### Run API Server
 
-Please make sure to run API server in async mode.  
-The dev server (`django manage.py runserver`) is already integrated with async support with Daphne.
+**Please make sure to run API server in async mode.**  
+The dev server (`django manage.py runserver`) is already integrated with async support with Daphne.  
+
+For production environment, you can use any kind of ASGI server, e.g., Daphne, Uvicorn, Hypercorn, etc.  
+For example, using Hypercorn:
+```bash
+hypercorn byk.asgi:application --bind 0.0.0.0:8000
+```
+
+You are strongly recommended to use `byk.settings_env` for production, or you can create your own settings module based
+on it.  
+Please make sure to configure database and run migrations prior to exposing the service to public.
+```bash
+export DJANGO_SETTINGS_MODULE=byk.settings_env  # or your custom settings module
+python byk/manage.py migrate
+```
 
 
 ### Run Task Worker
 
 ```bash
-faststream run byk.task_broker:app
+faststream run byk.task_broker.app:faststream_app
 ```
 
 ## Requirements
@@ -22,6 +36,10 @@ faststream run byk.task_broker:app
 - Redis 7+
 
 Please see [requirements](requirements.txt) for detail.
+
+If you are using Windows, please run this project with Docker/Podman or WSL, as some dependencies may not support 
+Windows natively.  
+Please refer to [docker-compose.yml](docker-compose.yml) for an example of setting up the environment with Docker.
 
 
 ## License
