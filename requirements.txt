@@ -1,0 +1,11 @@
+asgiref
+daphne
+
+beautifulsoup4
+django
+django-ninja
+pydantic[email]
+psycopg[binary]
+python-dotenv
+faststream[redis, cli]
+whitenoise

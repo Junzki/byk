@@ -1,0 +1,50 @@
+# -*- coding: utf-8 -*-
+import typing as ty  # noqa: F401
+
+from django.db import models
+
+FAKE_ISBN_PREFIX = '000'
+
+
+class BookStorage(models.Model):
+    location = models.CharField(max_length=255)
+    capacity = models.IntegerField()
+
+    def __str__(self) -> str:
+        return f"Storage at {self.location} with capacity {self.capacity}"
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    comments = models.TextField(blank=True, null=True)
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class Book(models.Model):
+    title = models.CharField(max_length=200, blank=True, null=True)
+    author = models.CharField(max_length=100, blank=True, null=True)
+    published_date = models.CharField(max_length=32, blank=True, null=True)
+
+    isbn_number = models.CharField(max_length=13, unique=True, blank=True, null=True)
+    pages = models.IntegerField(blank=True, null=True, default=None)
+    cover_image = models.URLField(blank=True, null=True)
+    language = models.CharField(max_length=30, null=True, blank=True)
+
+    location = models.ForeignKey(BookStorage, on_delete=models.CASCADE, related_name='books',
+                                 blank=True, null=True)
+    tags = models.ManyToManyField(Tag, related_name='books', blank=True)
+
+    comments = models.TextField(blank=True, null=True)
+
+    def is_fake_isbn(self) -> bool:
+        if not self.isbn_number:
+            return True
+
+        if self.isbn_number.startswith(FAKE_ISBN_PREFIX):
+            return True
+
+        return False
+
+    def __str__(self) -> str:
+        return f"{self.title} by {self.author}"

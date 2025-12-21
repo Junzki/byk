@@ -1,0 +1,65 @@
+---
+# CAUTION: This is a sample docker-compose file for local development purposes only.
+# Do not use it in production as is. Make sure to adjust configurations,
+# security settings, and other parameters according to your production requirements.
+
+version: '3'
+
+x-shared-environment: &shared-environment
+  environment:
+    POSTGRESQL_HOST: postgres
+    POSTGRESQL_PORT: 5432
+    POSTGRESQL_DB: byk
+    POSTGRESQL_USER: byk_user
+    POSTGRESQL_PASSWORD: byk_password
+    REDIS_URL: redis://redis:6379/0
+    # You may want to generate a new secret key for production use.
+    # You can use Django's `get_random_secret_key()` to generate one.
+    # from django.core.management.utils import get_random_secret_key
+    # print(get_random_secret_key())
+    DJANGO_SECRET_KEY: "replace-this-@arzp%+fdnvchq(_$3el_62bvxf8qi(hvgmk_8gh67ji1arhh8"
+
+services:
+  postgres:
+    image: docker.io/postgres:17-alpine
+    environment:
+      POSTGRES_USER: byk_user
+      POSTGRES_PASSWORD: byk_password
+      POSTGRES_DB: byk
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: docker.io/redis:7
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+
+  web:
+    build: .
+    image: docker.io/junzki/byk-server:latest
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+    <<: *shared-environment
+
+  tasks:
+    image: docker.io/junzki/byk-server:latest
+    command:
+      - faststream
+      - run
+      - byk.task_broker.app:faststream_app
+    depends_on:
+      - postgres
+      - redis
+    <<: *shared-environment
+
+
+volumes:
+  pgdata:
+  redisdata:

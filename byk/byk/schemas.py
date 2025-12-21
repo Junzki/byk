@@ -1,0 +1,11 @@
+# -*- coding: utf-8 -*-
+import typing as ty  # noqa: F401
+
+from ninja import Schema
+
+ERROR_OBJECT_NOT_FOUND = "object_not_found"
+
+
+class ErrorMessageSchema(Schema):
+    error_code: str = None
+    message: str = None
