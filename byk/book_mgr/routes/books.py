@@ -2,11 +2,12 @@
 import typing as ty  # noqa: F401
 
 from django.db.models import Q
+from django.db.utils import IntegrityError
 from ninja import Router
 from ninja.responses import codes_4xx
-from byk.schemas import ErrorMessageSchema, ERROR_OBJECT_NOT_FOUND
-from book_mgr.schemas import BookSchema
-from book_mgr.models import Book
+from byk.schemas import ErrorMessageSchema, ERROR_OBJECT_NOT_FOUND, ERROR_OBJECT_EXISTS, SUCCEED
+from book_mgr.schemas import BookSchema, BookCreateSchema
+from book_mgr.models import Book, BookStorage, Tag
 
 router = Router()
 
@@ -19,7 +20,9 @@ def list_books(request):
     Retrieve a list of all books in the system.
     """
 
-    books = Book.objects.select_related('location')
+    books = Book.objects.select_related('location') \
+        .prefetch_related('tags') \
+        .all()
     return list(books)
 
 
@@ -33,8 +36,78 @@ def retrieve_book(request, book_id: int | str):
     """
     try:
         book = Book.objects.select_related('location') \
+                   .prefetch_related('tags') \
                    .filter(Q(id=book_id) | Q(isbn_number=book_id)) \
                    .get()
         return book
     except Book.DoesNotExist:
         return 404, {"message": "Book not found", "error_code": ERROR_OBJECT_NOT_FOUND}
+
+
+@router.post('/', response={
+             201: BookSchema,
+             codes_4xx: ErrorMessageSchema
+})
+def create_book(request, payload: BookCreateSchema):
+    """
+    Create a new book entry in the system.
+    """
+    book_data = payload.dict(exclude_unset=True)
+
+    try:
+        book = Book.objects.create(**book_data)
+    except IntegrityError as e:
+        return 400, {
+            "message": "Book with given ISBN already exists",
+            "error_code": ERROR_OBJECT_EXISTS
+        }
+
+    book.refresh_from_db()
+    return 201, book
+
+
+@router.put('/{book_id}/', response={
+    200: BookSchema,
+    codes_4xx: ErrorMessageSchema
+})
+def update_book(request, book_id: int | str, payload: BookCreateSchema):
+    """
+    Update an existing book's details by its ID.
+    """
+    try:
+        book = Book.objects.filter(Q(id=book_id) | Q(isbn_number=book_id)).get()
+    except Book.DoesNotExist:
+        return 404, {"message": "Book not found", "error_code": ERROR_OBJECT_NOT_FOUND}
+
+    book_data = payload.dict(exclude_unset=True)
+
+    for field, value in book_data.items():
+        setattr(book, field, value)
+
+    try:
+        book.save()
+    except IntegrityError as e:
+        return 400, {
+            "message": "Book with given ISBN already exists",
+            "error_code": ERROR_OBJECT_EXISTS
+        }
+
+    book.refresh_from_db()
+    return 200, book
+
+
+@router.delete('/{book_id}/', response={
+               204: None,
+               codes_4xx: ErrorMessageSchema
+})
+def delete_book(request, book_id: int | str):
+    """
+    Delete a book from the system by its ID.
+    """
+    try:
+        book = Book.objects.filter(Q(id=book_id) | Q(isbn_number=book_id)).get()
+    except Book.DoesNotExist:
+        return 404, {"message": "Book not found", "error_code": ERROR_OBJECT_NOT_FOUND}
+
+    book.delete()
+    return 204, None

@@ -9,6 +9,7 @@ FAKE_ISBN_PREFIX = '000'
 class BookStorage(models.Model):
     location = models.CharField(max_length=255)
     capacity = models.IntegerField()
+    comments = models.TextField(blank=True, null=True)
 
     def __str__(self) -> str:
         return f"Storage at {self.location} with capacity {self.capacity}"

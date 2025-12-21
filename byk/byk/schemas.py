@@ -4,6 +4,8 @@ import typing as ty  # noqa: F401
 from ninja import Schema
 
 ERROR_OBJECT_NOT_FOUND = "object_not_found"
+ERROR_OBJECT_EXISTS = "object_exists"
+SUCCEED = "succeed"
 
 
 class ErrorMessageSchema(Schema):
