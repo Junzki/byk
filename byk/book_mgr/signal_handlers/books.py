@@ -13,4 +13,4 @@ async def on_book_saved(sender: ty.Type[Book], instance: Book, created: bool, **
     if not created:
         return
 
-    await broker.publish(str(instance.pk), "book_mgr.fetch_books")
+    await broker.publish(str(instance.id), "book_mgr.fetch_books")

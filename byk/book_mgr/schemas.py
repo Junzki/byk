@@ -29,11 +29,11 @@ class BookSchema(ModelSchema):
 
     class Meta:
         model = Book
-        exclude = ["tags"]
+        fields = "__all__"
 
 
 class BookCreateSchema(ModelSchema):
 
     class Meta:
         model = Book
-        exclude = ["id", "tags", "location"]
+        exclude = ["id", "location"]

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import typing as ty  # noqa: F401
+import uuid
 
 from django.db import models
 
@@ -22,9 +23,23 @@ class Tag(models.Model):
         return self.name
 
 
+class Author(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    biography = models.TextField(blank=True, null=True)
+
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateField(auto_now=True)
+
+    def __str__(self) -> str:
+        return self.name
+
+
+
 class Book(models.Model):
+    # UUID7 for time-sortable IDs
+    id = models.UUIDField(primary_key=True, editable=False, unique=True, default=uuid.uuid7)
     title = models.CharField(max_length=200, blank=True, null=True)
-    author = models.CharField(max_length=100, blank=True, null=True)
+    authors = models.JSONField(default=list, blank=True)
     published_date = models.CharField(max_length=32, blank=True, null=True)
 
     isbn_number = models.CharField(max_length=13, unique=True, blank=True, null=True)
@@ -34,9 +49,12 @@ class Book(models.Model):
 
     location = models.ForeignKey(BookStorage, on_delete=models.CASCADE, related_name='books',
                                  blank=True, null=True)
-    tags = models.ManyToManyField(Tag, related_name='books', blank=True)
+    tags = models.JSONField(default=list, blank=True)
 
     comments = models.TextField(blank=True, null=True)
+
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateField(auto_now=True)
 
     def is_fake_isbn(self) -> bool:
         if not self.isbn_number:
@@ -48,4 +66,4 @@ class Book(models.Model):
         return False
 
     def __str__(self) -> str:
-        return f"{self.title} by {self.author}"
+        return f"{self.title} by {', '.join(self.authors or list())}"

@@ -20,9 +20,7 @@ def list_books(request):
     Retrieve a list of all books in the system.
     """
 
-    books = Book.objects.select_related('location') \
-        .prefetch_related('tags') \
-        .all()
+    books = Book.objects.select_related('location').all()
     return list(books)
 
 
@@ -36,7 +34,6 @@ def retrieve_book(request, book_id: int | str):
     """
     try:
         book = Book.objects.select_related('location') \
-                   .prefetch_related('tags') \
                    .filter(Q(id=book_id) | Q(isbn_number=book_id)) \
                    .get()
         return book
