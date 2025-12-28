@@ -19,7 +19,17 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 
+from ninja import NinjaAPI
+from byk.authentication import token_auth, on_invalid_token
+from byk.exceptions import NotAuthenticated
+
+apis = NinjaAPI(auth=token_auth)
+apis.exception_handler(NotAuthenticated)(on_invalid_token(apis))
+
+apis.add_router('books/', 'book_mgr.routes.apis')
+apis.add_router('accounts/', 'accounts.routes.apis')
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('book-manager/', include('book_mgr.urls'))
+    path('api/v1/', apis.urls),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

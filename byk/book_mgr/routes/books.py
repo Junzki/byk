@@ -3,13 +3,11 @@ import typing as ty  # noqa: F401
 
 from django.db.models import Q
 from django.db.utils import IntegrityError
-from ninja import Router
 from ninja.responses import codes_4xx
 from byk.schemas import ErrorMessageSchema, ERROR_OBJECT_NOT_FOUND, ERROR_OBJECT_EXISTS, SUCCEED
 from book_mgr.schemas import BookSchema, BookCreateSchema
-from book_mgr.models import Book, BookStorage, Tag
-
-router = Router()
+from book_mgr.models import Book
+from .router import router
 
 
 @router.get("/", response={

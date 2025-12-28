@@ -6,6 +6,8 @@ from ninja import Schema
 ERROR_OBJECT_NOT_FOUND = "object_not_found"
 ERROR_OBJECT_EXISTS = "object_exists"
 SUCCEED = "succeed"
+NOT_AUTHENTICATED = "not_authenticated"
+AUTHENTICATION_FAILURE = "authentication_failure"
 
 
 class ErrorMessageSchema(Schema):

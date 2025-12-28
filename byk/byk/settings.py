@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'ninja',
     'book_mgr',
+    'accounts'
 ]
 
 MIDDLEWARE = [
@@ -48,6 +49,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'byk.middlewares.request_id.RequestTracingMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -130,3 +132,47 @@ STATIC_ROOT = BASE_DIR / 'static'
 FASTSTREAM_TASK_MODULES = [
     'book_mgr.tasks',
 ]
+
+# Auth0
+JWT_ALGORITHM = 'HS256'
+AUTH0_CLIENT_ID = ''
+AUTH0_CLIENT_SECRET = ''
+AUTH0_DOMAIN = ''
+JWT_SECRET_KEY = ''
+
+
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'request_tracing': {
+            '()': 'byk.logs.RequestTracingFilter',
+        }
+    },
+    'formatters': {
+        'nova_style': {
+            # 这里的字段必须和 Filter 注入的 key 一致
+            'format': '[%(asctime)s] [%(levelname)s] [%(client_ip)s] [%(request_id)s] %(name)s: %(message)s',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['request_tracing'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'nova_style',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'byk': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
