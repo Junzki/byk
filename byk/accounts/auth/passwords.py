@@ -69,7 +69,7 @@ async def authenticate_user_by_password(
         return None
 
     query = User.objects.all()
-    if "default" != tenant:
+    if DEFAULT_TENANT != tenant:
         query = query.filter(tenant__slug=tenant)
 
     try:

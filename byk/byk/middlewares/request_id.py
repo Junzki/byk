@@ -11,7 +11,7 @@ class RequestTracingMiddleware:
 
     def __call__(self, request):
         # 1. 优先获取 Next.js 传来的 Request ID，否则生成新的
-        req_id = request.headers.get("X-Request-ID", str(uuid.uuid7()))
+        req_id = request.headers.get("X-Request-ID", 'req-%s' % str(uuid.uuid7()))
 
         # 2. 获取真实的 Client IP (考虑代理情况)
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
